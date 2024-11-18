@@ -161,7 +161,7 @@ def save():
     sFile = bool(optionFile.get())
     sFolder = bool(optionFolder.get())
 
-    if sText == "" or sColor == get_translation("select_something") or sFont == get_translation("select_something"):
+    if sText == "" or sColor == get_translation("select_something") or sColor not in colorCombobox.cget("values") or sFont == get_translation("select_something") or sFont not in fontCombobox.cget("values"):
         CTkM(title=get_translation("error"), message=get_translation("error_fill_all_fields"), icon="cancel")
         return
 

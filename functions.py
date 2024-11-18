@@ -68,7 +68,7 @@ def checkIntegrityText(text: str) -> None:
         return
 
     for letter in text:
-        if not letter in "abcdefghijklmnopqrstuvwxyz ":
+        if not letter.lower() in "abcdefghijklmnopqrstuvwxyz ":
             CTkM(title=get_translation("error"), message=get_translation("error_invalid_character", letter=letter),
                  icon="cancel")
             return
@@ -78,6 +78,8 @@ def checkIntegrityText(text: str) -> None:
 
 def checkIntegrityTextFont(text: str, font: str) -> bool:
     for letter in text:
+        if letter == " ":
+            letter = "space"
         if not os.path.exists(f"letters/{font}/{letter}.png"):
             print(letter)
             return False
@@ -158,6 +160,8 @@ def createText(text: str, font: str, color: str, openFile: bool, openDir: bool) 
     textList = [[] for _ in range(line)]
 
     for letter in text:
+        if letter == " ":
+            letter = "space"
         letterImage = Image.open(f"letters/{font}/{letter}.png")
         pixels = list(letterImage.getdata())
         for i in range(line):
