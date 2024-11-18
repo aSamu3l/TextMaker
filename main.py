@@ -22,13 +22,14 @@ with open("settings/lang.json", "r", encoding="UTF-8") as lJ:
     langJson = json.load(lJ)
 
 language = settJson["language"]
+f.setLanguage(language)
 
 def get_translation(key, **kwargs):
     return langJson[language][key].format(**kwargs)
 
 def changeThemeJson():
     with open("settings/setting.json", "w") as sJ:
-        settJson["theme"] = ctk.get_appearance_mode()
+        settJson["theme"] = theme
         json.dump(settJson, sJ, indent=4)
         sJ.close()
 
@@ -56,7 +57,7 @@ def on_f5():
             ft.add_option(letter, command=lambda l=letter: deleteFont(l))
     if len(ft.children) > 0:
         ft.add_separator()
-    ft.add_option(get_translation("import_new_font"), command=f.importNewFont)
+    ft.add_option(get_translation("import_new_font"), command=importFont)
 
     for widget in cl.winfo_children():
         widget.destroy()
@@ -65,7 +66,7 @@ def on_f5():
             cl.add_option(os.path.splitext(color)[0], command=lambda c=os.path.splitext(color)[0]: deleteColor(c))
     if len(cl.children) > 0:
         cl.add_separator()
-    cl.add_option(get_translation("import_new_color"), command=f.importNewColor)
+    cl.add_option(get_translation("import_new_color"), command=importColor)
 
     for widget in lang.winfo_children():
         widget.destroy()
@@ -74,9 +75,9 @@ def on_f5():
 
     for widget in ap.winfo_children():
         widget.destroy()
-    ap.add_option(get_translation("appearance_system") + (" ✓" if ctk.get_appearance_mode() == "System" else ""), command=lambda: setAppearance(0))
-    ap.add_option(get_translation("appearance_light") + (" ✓" if ctk.get_appearance_mode() == "Light" else ""), command=lambda: setAppearance(1))
-    ap.add_option(get_translation("appearance_dark") + (" ✓" if ctk.get_appearance_mode() == "Dark" else ""), command=lambda: setAppearance(2))
+    ap.add_option(get_translation("appearance_system") + (" ✓" if theme == "System" else ""), command=lambda: setAppearance(0))
+    ap.add_option(get_translation("appearance_light") + (" ✓" if theme == "Light" else ""), command=lambda: setAppearance(1))
+    ap.add_option(get_translation("appearance_dark") + (" ✓" if theme == "Dark" else ""), command=lambda: setAppearance(2))
 
 def importFont():
     f.importNewFont()
@@ -103,6 +104,7 @@ def deleteColor(color: str):
 def changeLanguage(lang):
     global language
     language = lang
+    f.setLanguage(lang)
     settJson["language"] = lang
     with open("settings/setting.json", "w") as sJ:
         json.dump(settJson, sJ, indent=4)
@@ -129,18 +131,23 @@ def updateTexts():
     on_f5()
 
 def setAppearance(tipo: int):
+    global theme
     for widget in ap.winfo_children():
         widget.destroy()
+
     if tipo == 1:
         ctk.set_appearance_mode("Light")
+        theme = "Light"
     elif tipo == 2:
         ctk.set_appearance_mode("Dark")
+        theme = "Dark"
     else:
         ctk.set_appearance_mode("System")
+        theme = "System"
 
-    ap.add_option(get_translation("appearance_system") + (" ✓" if ctk.get_appearance_mode() == "System" else ""), command=lambda: setAppearance(0))
-    ap.add_option(get_translation("appearance_light") + (" ✓" if ctk.get_appearance_mode() == "Light" else ""), command=lambda: setAppearance(1))
-    ap.add_option(get_translation("appearance_dark") + (" ✓" if ctk.get_appearance_mode() == "Dark" else ""), command=lambda: setAppearance(2))
+    ap.add_option(get_translation("appearance_system") + (" ✓" if theme == "System" else ""), command=lambda: setAppearance(0))
+    ap.add_option(get_translation("appearance_light") + (" ✓" if theme == "Light" else ""), command=lambda: setAppearance(1))
+    ap.add_option(get_translation("appearance_dark") + (" ✓" if theme == "Dark" else ""), command=lambda: setAppearance(2))
 
     if os.name == "nt":
         root.iconbitmap("img/iconl.ico" if ctk.get_appearance_mode() == "Light" else "img/icond.ico")
@@ -184,9 +191,9 @@ settMBDropdown = CDM(settMB)
 
 ## Appearance
 ap = settMBDropdown.add_submenu(get_translation("appearance"))
-ap.add_option(get_translation("appearance_system") + (" ✓" if ctk.get_appearance_mode() == "System" else ""), command=lambda: setAppearance(0))
-ap.add_option(get_translation("appearance_light") + (" ✓" if ctk.get_appearance_mode() == "Light" else ""), command=lambda: setAppearance(1))
-ap.add_option(get_translation("appearance_dark") + (" ✓" if ctk.get_appearance_mode() == "Dark" else ""), command=lambda: setAppearance(2))
+ap.add_option(get_translation("appearance_system") + (" ✓" if theme == "System" else ""), command=lambda: setAppearance(0))
+ap.add_option(get_translation("appearance_light") + (" ✓" if theme == "Light" else ""), command=lambda: setAppearance(1))
+ap.add_option(get_translation("appearance_dark") + (" ✓" if theme == "Dark" else ""), command=lambda: setAppearance(2))
 
 ## Language
 lang = settMBDropdown.add_submenu(get_translation("language"))

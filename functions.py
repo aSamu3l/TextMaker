@@ -10,8 +10,17 @@ import json
 with open("settings/lang.json", "r", encoding="UTF-8") as lJ:
     langJson = json.load(lJ)
 
+language = "EN"
+
+
+def setLanguage(lang: str) -> None:
+    global language
+    language = lang
+
+
 def get_translation(key, **kwargs):
     return langJson[language][key].format(**kwargs)
+
 
 def checkIntegrityFont(font: str) -> bool:
     if not os.path.exists(f"letters/{font}"):
@@ -32,6 +41,7 @@ def checkIntegrityFont(font: str) -> bool:
 
     return True
 
+
 def checkIntegrityColor(color: str) -> bool:
     if not os.path.exists(f"colors/{color}.png"):
         return False
@@ -51,6 +61,7 @@ def checkIntegrityColor(color: str) -> bool:
 
     return True
 
+
 def checkIntegrityText(text: str) -> None:
     if not text:
         CTkM(title=get_translation("error"), message=get_translation("error_empty_text"), icon="cancel")
@@ -58,17 +69,21 @@ def checkIntegrityText(text: str) -> None:
 
     for letter in text:
         if not letter in "abcdefghijklmnopqrstuvwxyz ":
-            CTkM(title=get_translation("error"), message=get_translation("error_invalid_character", letter=letter), icon="cancel")
+            CTkM(title=get_translation("error"), message=get_translation("error_invalid_character", letter=letter),
+                 icon="cancel")
             return
 
     CTkM(title=get_translation("success"), message=get_translation("success_valid_text"), icon="info")
 
+
 def checkIntegrityTextFont(text: str, font: str) -> bool:
     for letter in text:
         if not os.path.exists(f"letters/{font}/{letter}.png"):
+            print(letter)
             return False
 
     return True
+
 
 def importNewFont() -> None:
     zip_path = fd.askopenfilename(filetypes=[("Zip files", "*.zip")])
@@ -97,12 +112,14 @@ def importNewFont() -> None:
     shutil.rmtree(temp_dir)
     CTkM(title=get_translation("success"), message=get_translation("success_font_imported"))
 
+
 def deleteFont(font: str) -> None:
     if not os.path.exists(f"letters/{font}"):
         CTkM(title=get_translation("error"), message=get_translation("error_font_not_found"))
         return
     shutil.rmtree(f"letters/{font}")
     CTkM(title=get_translation("success"), message=get_translation("success_font_deleted"))
+
 
 def importNewColor() -> None:
     color_path = fd.askopenfilename(filetypes=[("PNG files", "*.png")])
@@ -114,12 +131,14 @@ def importNewColor() -> None:
     shutil.copy(color_path, dest_path)
     CTkM(title=get_translation("success"), message=get_translation("success_color_imported"))
 
+
 def deleteColor(color: str) -> None:
     if not os.path.exists(f"colors/{color}.png"):
         CTkM(title=get_translation("error"), message=get_translation("error_color_not_found"))
         return
     os.remove(f"colors/{color}.png")
     CTkM(title=get_translation("success"), message=get_translation("success_color_deleted"))
+
 
 def createText(text: str, font: str, color: str, openFile: bool, openDir: bool) -> None:
     if not checkIntegrityFont(font):
@@ -144,7 +163,8 @@ def createText(text: str, font: str, color: str, openFile: bool, openDir: bool) 
         for i in range(line):
             textList[i].extend(pixels[i * letterImage.width:(i + 1) * letterImage.width])
 
-    pixelChange = {Image.open("grey.png").getpixel((0, i)): Image.open(f"colors/{color}.png").getpixel((0, i)) for i in range(3)}
+    pixelChange = {Image.open("grey.png").getpixel((0, i)): Image.open(f"colors/{color}.png").getpixel((0, i)) for i in
+                   range(3)}
 
     for i in range(len(textList)):
         for j in range(len(textList[i])):
